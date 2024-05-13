@@ -2,6 +2,11 @@
 
 adb connect tool 
 
+
+## Preview
+
+![image](https://raw.githubusercontent.com/mdddj/android_adb_tool/main/img.png)
+
 ## API
 
 

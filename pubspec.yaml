@@ -1,6 +1,7 @@
 name: android_adb_tool
 description: "A android adb tool by dart"
-version: 0.0.1
+version: 0.0.2
+homepage: https://github.com/mdddj/android_adb_tool
 
 environment:
   sdk: '>=3.3.1 <4.0.0'
