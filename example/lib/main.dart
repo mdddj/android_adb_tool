@@ -1,9 +1,9 @@
+import 'package:android_adb_tool/android_adb_tool.dart';
+import 'package:android_adb_tool/api/tool.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:android_adb_tool/android_adb_tool.dart' as android_adb_tool;
 
 void main() {
+  AndroidAdbTool.instance.init();
   runApp(const MyApp());
 }
 
@@ -15,20 +15,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late int sumResult;
-  late Future<int> sumAsyncResult;
+  TextEditingController controller = TextEditingController(text: '127.0.0.1');
+  TextEditingController portController = TextEditingController(text: '5037');
+  TextEditingController shellController = TextEditingController(text: '');
+  String? output;
+
+  AdbTcpConnection? connection;
 
   @override
   void initState() {
     super.initState();
-    sumResult = android_adb_tool.sum(1, 2);
-    sumAsyncResult = android_adb_tool.sumAsync(3, 4);
   }
 
   @override
   Widget build(BuildContext context) {
-    const textStyle = TextStyle(fontSize: 25);
-    const spacerSmall = SizedBox(height: 10);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -39,36 +39,61 @@ class _MyAppState extends State<MyApp> {
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                const Text(
-                  'This calls a native function through FFI that is shipped as source in the package. '
-                  'The native code is built as part of the Flutter Runner build.',
-                  style: textStyle,
-                  textAlign: TextAlign.center,
+                TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(labelText: 'address'),
                 ),
-                spacerSmall,
-                Text(
-                  'sum(1, 2) = $sumResult',
-                  style: textStyle,
-                  textAlign: TextAlign.center,
+                TextField(
+                  controller: portController,
+                  decoration: const InputDecoration(labelText: 'port'),
                 ),
-                spacerSmall,
-                FutureBuilder<int>(
-                  future: sumAsyncResult,
-                  builder: (BuildContext context, AsyncSnapshot<int> value) {
-                    final displayValue =
-                        (value.hasData) ? value.data : 'loading';
-                    return Text(
-                      'await sumAsync(3, 4) = $displayValue',
-                      style: textStyle,
-                      textAlign: TextAlign.center,
-                    );
-                  },
+                ElevatedButton(
+                    onPressed: _connect, child: const Text('ADB Connect')),
+                TextField(
+                  controller: shellController,
+                  decoration: const InputDecoration(labelText: 'Run Adb shell'),
                 ),
+                FilledButton(
+                    onPressed: connection == null ? null : run,
+                    child: const Text('Run Shell Command')),
+                if(output!=null)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('输出'),
+                          Text(output!),
+                        ],
+                      ),
+                    ),
+                  )
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _connect() async {
+    connection = await AndroidAdbTool.instance
+        .connect(controller.text, int.parse(portController.text));
+    setState(() {});
+  }
+
+  Future<void> run() async {
+    if (connection != null) {
+      final shellCommand = shellController.text.split(" ");
+      try {
+        final result = await connection!.runShellCommand(shellCommand);
+        setState(() {
+          output = result.toStringValue;
+        });
+      } catch (e) {
+        print("error ${e}");
+      }
+    }
   }
 }

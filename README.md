@@ -1,92 +1,138 @@
 # android_adb_tool
 
-A new Flutter FFI plugin project.
+adb connect tool 
 
-## Getting Started
+## API
 
-This project is a starting point for a Flutter
-[FFI plugin](https://docs.flutter.dev/development/platform-integration/c-interop),
-a specialized package that includes native code directly invoked with Dart FFI.
 
-## Project structure
 
-This template uses the following structure:
+init `AndroidAdbTool.instance.init();`
+```dart
+void main() {
+  
+  //add this line
+  AndroidAdbTool.instance.init();
+  runApp(const MyApp());
+}
 
-* `src`: Contains the native source code, and a CmakeFile.txt file for building
-  that source code into a dynamic library.
-
-* `lib`: Contains the Dart code that defines the API of the plugin, and which
-  calls into the native code using `dart:ffi`.
-
-* platform folders (`android`, `ios`, `windows`, etc.): Contains the build files
-  for building and bundling the native code library with the platform application.
-
-## Building and bundling native code
-
-The `pubspec.yaml` specifies FFI plugins as follows:
-
-```yaml
-  plugin:
-    platforms:
-      some_platform:
-        ffiPlugin: true
 ```
 
-This configuration invokes the native build for the various target platforms
-and bundles the binaries in Flutter applications using these FFI plugins.
 
-This can be combined with dartPluginClass, such as when FFI is used for the
-implementation of one platform in a federated plugin:
+### 1. connect
 
-```yaml
-  plugin:
-    implements: some_other_plugin
-    platforms:
-      some_platform:
-        dartPluginClass: SomeClass
-        ffiPlugin: true
+```dart
+AdbTcpConnection connection =  await AndroidAdbTool.instance.connect("127.0.0.1",5037)
 ```
 
-A plugin can have both FFI and method channels:
 
-```yaml
-  plugin:
-    platforms:
-      some_platform:
-        pluginClass: SomeName
-        ffiPlugin: true
+### 3. run shell
+```dart
+Uint8List result = await connection.runShellCommand("df -h");
+print("output string:${result.toStringValue}");
 ```
 
-The native build systems that are invoked by FFI (and method channel) plugins are:
 
-* For Android: Gradle, which invokes the Android NDK for native builds.
-  * See the documentation in android/build.gradle.
-* For iOS and MacOS: Xcode, via CocoaPods.
-  * See the documentation in ios/android_adb_tool.podspec.
-  * See the documentation in macos/android_adb_tool.podspec.
-* For Linux and Windows: CMake.
-  * See the documentation in linux/CMakeLists.txt.
-  * See the documentation in windows/CMakeLists.txt.
+## Full example
 
-## Binding to native code
+```dart
+import 'package:android_adb_tool/android_adb_tool.dart';
+import 'package:android_adb_tool/api/tool.dart';
+import 'package:flutter/material.dart';
 
-To use the native code, bindings in Dart are needed.
-To avoid writing these by hand, they are generated from the header file
-(`src/android_adb_tool.h`) by `package:ffigen`.
-Regenerate the bindings by running `flutter pub run ffigen --config ffigen.yaml`.
+void main() {
+  AndroidAdbTool.instance.init();
+  runApp(const MyApp());
+}
 
-## Invoking native code
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
 
-Very short-running native functions can be directly invoked from any isolate.
-For example, see `sum` in `lib/android_adb_tool.dart`.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
 
-Longer-running functions should be invoked on a helper isolate to avoid
-dropping frames in Flutter applications.
-For example, see `sumAsync` in `lib/android_adb_tool.dart`.
+class _MyAppState extends State<MyApp> {
+  TextEditingController controller = TextEditingController(text: '127.0.0.1');
+  TextEditingController portController = TextEditingController(text: '5037');
+  TextEditingController shellController = TextEditingController(text: '');
+  String? output;
 
-## Flutter help
+  AdbTcpConnection? connection;
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+  @override
+  void initState() {
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Native Packages'),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(labelText: 'address'),
+                ),
+                TextField(
+                  controller: portController,
+                  decoration: const InputDecoration(labelText: 'port'),
+                ),
+                ElevatedButton(
+                    onPressed: _connect, child: const Text('ADB Connect')),
+                TextField(
+                  controller: shellController,
+                  decoration: const InputDecoration(labelText: 'Run Adb shell'),
+                ),
+                FilledButton(
+                    onPressed: connection == null ? null : run,
+                    child: const Text('Run Shell Command')),
+                if(output!=null)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('输出'),
+                          Text(output!),
+                        ],
+                      ),
+                    ),
+                  )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _connect() async {
+    connection = await AndroidAdbTool.instance
+        .connect(controller.text, int.parse(portController.text));
+    setState(() {});
+  }
+
+  Future<void> run() async {
+    if (connection != null) {
+      final shellCommand = shellController.text.split(" ");
+      try {
+        final result = await connection!.runShellCommand(shellCommand);
+        setState(() {
+          output = result.toStringValue;
+        });
+      } catch (e) {
+        print("error ${e}");
+      }
+    }
+  }
+}
+
+```

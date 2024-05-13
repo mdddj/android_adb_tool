@@ -1,10 +1,43 @@
-
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:typed_data';
+
+import 'package:android_adb_tool/api/tool.dart';
+import 'package:android_adb_tool/frb_generated.dart';
 
 import 'android_adb_tool_bindings_generated.dart';
+
+
+extension Uint8ListEx on Uint8List {
+  String get toStringValue  {
+    String s = String.fromCharCodes(this);
+    return s;
+  }
+}
+
+extension AdbTcpConnectionEx on AdbTcpConnection {
+  // run shell command
+  Future<Uint8List> runShellCommand(List<String> shell) async {
+    return shellCommand(conn: this, command: shell);
+  }
+}
+
+class AndroidAdbTool {
+  AndroidAdbTool._();
+  factory AndroidAdbTool() => AndroidAdbTool._();
+  static final AndroidAdbTool instance = AndroidAdbTool();
+
+  void init() {
+    RustLib.init();
+  }
+
+  // create a new adb connect
+  Future<AdbTcpConnection> connect(String addr, int port) async {
+    return createNewConnect(addr: addr, port: port);
+  }
+}
 
 /// A very short-lived native function.
 ///
@@ -51,7 +84,6 @@ final DynamicLibrary _dylib = () {
 
 /// The bindings to the native functions in [_dylib].
 final AndroidAdbToolBindings _bindings = AndroidAdbToolBindings(_dylib);
-
 
 /// A request to compute `sum`.
 ///
