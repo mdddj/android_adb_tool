@@ -26,16 +26,35 @@ void main() {
 ### 1. connect
 
 ```dart
-AdbTcpConnection connection =  await AndroidAdbTool.instance.connect("127.0.0.1",5037)
+DeviceHost host = DeviceHost(addr: "127.0.0.1", port: 5037);
+AdbDevice _device = await host.connectToDevice();// connect
 ```
 
 
 ### 3. run shell
 ```dart
-Uint8List result = await connection.runShellCommand("df -h");
-print("output string:${result.toStringValue}");
+String output = _device.executeHostShellCommand(shell: shellCommand);// output
+
+
+// or 
+
+String ouput = ._device.executeHostCommand(shell:shellCommand,hasOutput:true,hasLen:true );
+ 
 ```
 
+### 4. get devices
+```
+List<AdbDeviceInfo> devices = await host.devices();
+for (var element in devices) {
+    print(element.data);// output 
+}
+```
+output 
+```dart
+I/flutter (15113): {model: sdk_gphone64_arm64, product: sdk_gphone64_arm64, device: emu64a, transport_id: 1}
+```
+
+### 5 more...
 
 ## Full example
 
