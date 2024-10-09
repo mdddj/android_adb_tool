@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
                     OutlinedButton(
                         onPressed: () async {
                           List<AdbDeviceInfo> devices =
-                              await getHost().devices();
+                              getHost().devices();
 
                           for (var element in devices) {
                             print(element.data);
@@ -76,7 +76,7 @@ class _MyAppState extends State<MyApp> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('输出'),
+                          const Text('输出'),
                           SelectableText(output!),
                         ],
                       ),
@@ -97,7 +97,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _connect() async {
     final host = getHost();
-    _device = await host.connectToDevice();
+    _device = host.connectToDevice();
     setState(() {});
   }
 
@@ -105,14 +105,13 @@ class _MyAppState extends State<MyApp> {
     if (_device != null) {
       final shellCommand = shellController.text;
       try {
-        final result =
-            await _device!.executeHostShellCommand(shell: shellCommand);
+        final result = _device!.executeHostShellCommand(shell: shellCommand);
         print(result);
         setState(() {
           output = result;
         });
       } catch (e) {
-        print("error ${e}");
+        print("error $e");
       }
     }
   }

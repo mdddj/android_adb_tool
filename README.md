@@ -27,7 +27,7 @@ void main() {
 
 ```dart
 DeviceHost host = DeviceHost(addr: "127.0.0.1", port: 5037);
-AdbDevice _device = await host.connectToDevice();// connect
+AdbDevice _device =  host.connectToDevice();// connect
 ```
 
 
@@ -44,7 +44,7 @@ String ouput = ._device.executeHostCommand(shell:shellCommand,hasOutput:true,has
 
 ### 4. get devices
 ```
-List<AdbDeviceInfo> devices = await host.devices();
+List<AdbDeviceInfo> devices = host.devices();
 for (var element in devices) {
     print(element.data);// output 
 }

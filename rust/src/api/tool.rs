@@ -1,8 +1,6 @@
-use std::{
-    collections::{BTreeMap, HashMap},
-    net::TcpStream,
-};
+use std::{collections::HashMap, net::TcpStream};
 
+use flutter_rust_bridge::frb;
 use mozdevice::{Device, DeviceInfo, Host};
 
 ///设备
@@ -22,6 +20,7 @@ impl DeviceHost {
         }
     }
 
+    #[frb(sync)]
     pub fn connect(&self) -> Result<DeviceTcpStream, String> {
         let r = self.get_host().connect();
         match r {
@@ -30,6 +29,7 @@ impl DeviceHost {
         }
     }
 
+    #[frb(sync)]
     pub fn connect_to_device(&self) -> Result<AdbDevice, String> {
         let r = self.get_host().device_or_default(
             Option::<&String>::None,
@@ -41,6 +41,7 @@ impl DeviceHost {
         }
     }
 
+    #[frb(sync)]
     pub fn devices(&self) -> Result<Vec<AdbDeviceInfo>, String> {
         let devices: Result<Vec<DeviceInfo>, mozdevice::DeviceError> =
             self.get_host().devices::<Vec<DeviceInfo>>();
@@ -109,6 +110,7 @@ impl From<Device> for AdbDevice {
 }
 
 impl AdbDevice {
+    #[frb(sync)]
     pub fn execute_host_shell_command(&self, shell: &str) -> Result<String, String> {
         let r = self.device.execute_host_shell_command(shell);
         match r {
@@ -116,6 +118,7 @@ impl AdbDevice {
             Err(e) => Err(e.to_string()),
         }
     }
+    #[frb(sync)]
     pub fn execute_host_command(
         &self,
         shell: &str,

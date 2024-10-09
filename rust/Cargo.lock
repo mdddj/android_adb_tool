@@ -235,9 +235,9 @@ checksum = "9fc0510504f03c51ada170672ac806f1f105a88aa97a5281117e1ddc3368e51a"
 
 [[package]]
 name = "flutter_rust_bridge"
-version = "2.0.0"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "033e831e28f1077ceae3490fb6d093dfdefefd09c5c6e8544c6579effe7e814f"
+checksum = "35a06af75bcc46b5443c2293f99fda22819e816f8a5f5bea04c72f8cb04a106a"
 dependencies = [
  "allo-isolate",
  "android_logger",
@@ -252,7 +252,9 @@ dependencies = [
  "futures",
  "js-sys",
  "lazy_static",
+ "log",
  "oslog",
+ "portable-atomic",
  "threadpool",
  "tokio",
  "wasm-bindgen",
@@ -262,9 +264,9 @@ dependencies = [
 
 [[package]]
 name = "flutter_rust_bridge_macros"
-version = "2.0.0"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0217fc4b7131b52578be60bbe38c76b3edfc2f9fecab46d9f930510f40ef9023"
+checksum = "9250f0a18500e7825617ddb677bccf1336a2fe4c4edf6c6ce7717967ed67f42e"
 dependencies = [
  "hex",
  "md-5",
@@ -522,6 +524,12 @@ name = "pin-utils"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
+
+[[package]]
+name = "portable-atomic"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cc9c68a3f6da06753e9335d63e27f6b9754dd1920d941135b7ea8224f141adb2"
 
 [[package]]
 name = "proc-macro2"
