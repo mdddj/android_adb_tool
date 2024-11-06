@@ -1,3 +1,11 @@
+## 1.0.5
+
+upgrade frb to 2.6.0
+
+## 1.0.4
+
+upgrade frb to 2.5.1
+
 ## 1.0.3
 
 upgrade frb to 2.5.0
