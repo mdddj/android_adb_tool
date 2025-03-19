@@ -1,3 +1,8 @@
+## 1.0.6
+
+upgrade frb to 2.9.0
+upgrade mozdevice to 0.5.4
+
 ## 1.0.5
 
 upgrade frb to 2.6.0

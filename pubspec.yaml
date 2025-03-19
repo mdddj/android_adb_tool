@@ -1,6 +1,6 @@
 name: android_adb_tool
 description: "A android adb tool by dart"
-version: 1.0.5
+version: 1.0.6
 homepage: https://github.com/mdddj/android_adb_tool
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-  flutter_rust_bridge: 2.6.0
+  flutter_rust_bridge: 2.9.0
 
 dev_dependencies:
   ffi: ^2.1.0
